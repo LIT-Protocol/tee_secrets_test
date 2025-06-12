@@ -13,10 +13,13 @@ import {
 } from "@lit-protocol/constants";
 import {
   LitAccessControlConditionResource,
+  LitActionResource,
   createSiweMessage,
   generateAuthSig,
 } from "@lit-protocol/auth-helpers";
-import { createSiweWithResourceParams } from "./utils";
+import { createSiweWithResourceParams, stringToIpfsHash } from "./utils";
+// import { litActionCode } from "./litAction";
+import fs from "fs";
 
 async function main(): Promise<void> {
   // Initialize the Lit client
@@ -36,41 +39,58 @@ async function main(): Promise<void> {
     "base64url"
   );
 
-  // Gate the access to the secret on a valid phala attestation
-  const evmContractConditions = [
+  // // Gate the access to the secret on a valid phala attestation
+  // const evmContractConditions = [
+  //   {
+  //     contractAddress: "0x76A3657F2d6c5C66733e9b69ACaDadCd0B68788b",
+  //     functionName: "verifyAndAttestOnChain",
+  //     functionParams: [":litParam:attestationQuote"],
+  //     functionAbi: {
+  //       inputs: [
+  //         {
+  //           internalType: "bytes",
+  //           name: "rawQuote",
+  //           type: "bytes",
+  //         },
+  //       ],
+  //       name: "verifyAndAttestOnChain",
+  //       outputs: [
+  //         {
+  //           internalType: "bool",
+  //           name: "success",
+  //           type: "bool",
+  //         },
+  //         {
+  //           internalType: "bytes",
+  //           name: "output",
+  //           type: "bytes",
+  //         },
+  //       ],
+  //       stateMutability: "view",
+  //       type: "function",
+  //     },
+  //     chain: "sepolia" as const,
+  //     returnValueTest: {
+  //       key: "success",
+  //       comparator: "=" as const,
+  //       value: "true",
+  //     },
+  //   },
+  // ];
+
+  const litActionCode = fs.readFileSync("./litAction/dist/bundle.js", "utf8");
+  const derivedIpfsId = await stringToIpfsHash(litActionCode);
+
+  const accessControlConditions = [
     {
-      contractAddress: "0x76A3657F2d6c5C66733e9b69ACaDadCd0B68788b",
-      functionName: "verifyAndAttestOnChain",
-      functionParams: [":litParam:attestationQuote"],
-      functionAbi: {
-        inputs: [
-          {
-            internalType: "bytes",
-            name: "rawQuote",
-            type: "bytes",
-          },
-        ],
-        name: "verifyAndAttestOnChain",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "success",
-            type: "bool",
-          },
-          {
-            internalType: "bytes",
-            name: "output",
-            type: "bytes",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      chain: "sepolia" as const,
+      contractAddress: "",
+      chain: "ethereum" as const,
+      standardContractType: "" as const,
+      method: "",
+      parameters: [":currentActionIpfsId"],
       returnValueTest: {
-        key: "success",
         comparator: "=" as const,
-        value: "true",
+        value: derivedIpfsId,
       },
     },
   ];
@@ -78,7 +98,7 @@ async function main(): Promise<void> {
   try {
     // Encrypt the secret
     const encryptResponse = await client.encrypt({
-      evmContractConditions,
+      accessControlConditions,
       dataToEncrypt: secret,
     });
     const { ciphertext, dataToEncryptHash } = encryptResponse;
@@ -97,6 +117,10 @@ async function main(): Promise<void> {
         {
           resource: new LitAccessControlConditionResource("*"),
           ability: LIT_ABILITY.AccessControlConditionDecryption,
+        },
+        {
+          resource: new LitActionResource("*"),
+          ability: LIT_ABILITY.LitActionExecution,
         },
       ],
       authNeededCallback: async ({
@@ -124,19 +148,32 @@ async function main(): Promise<void> {
     });
 
     // Decrypt the secret
-    const decryptedString = await client.decrypt({
-      evmContractConditions,
+    const result = await client.executeJs({
       sessionSigs: sessionSignatures,
-      chain: "ethereum",
-      ciphertext: ciphertext,
-      dataToEncryptHash: dataToEncryptHash,
+      code: litActionCode,
+      jsParams: {
+        ciphertext,
+        dataToEncryptHash,
+        accessControlConditions,
+        attestation: attestationQuote,
+      },
     });
 
+    console.log("Result:", result);
+
+    // const decryptedString = await client.decrypt({
+    //   evmContractConditions,
+    //   sessionSigs: sessionSignatures,
+    //   chain: "ethereum",
+    //   ciphertext: ciphertext,
+    //   dataToEncryptHash: dataToEncryptHash,
+    // });
+
     // decode from uint8array and print the decrypted secret
-    console.log(
-      "Decrypted secret:",
-      uint8arrayToString(decryptedString.decryptedData)
-    );
+    // console.log(
+    //   "Decrypted secret:",
+    //   uint8arrayToString(decryptedString.decryptedData)
+    // );
   } catch (error) {
     console.error("Error:", error);
   }
