@@ -16,8 +16,9 @@ cp pkg/dcap_qvl.js ../dcap_qvl_node.js
 # Create a temporary file with the initialization code
 cat > ../init_code.js << EOF
 const wasmBytes = "$(cat ../wasm.b64)";
-const wasmModule = new WebAssembly.Module(atob(wasmBytes));
-const wasm = new WebAssembly.Instance(wasmModule, imports).exports;
+const wasmCode = Buffer.from(wasmBytes, "base64");
+const wasmModule = new WebAssembly.Module(wasmCode);
+const wasmInstance = new WebAssembly.Instance(wasmModule, imports);
 EOF
 
 # Remove the wasm_url loading code and replace with our initialization code
