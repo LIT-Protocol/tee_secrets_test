@@ -21,9 +21,9 @@ const wasm = new WebAssembly.Instance(wasmModule, imports).exports;
 EOF
 
 # Remove the wasm_url loading code and replace with our initialization code
-sed -i '' -e '/const wasm_url = new URL/,/throw new Error(`Unsupported protocol: ${wasm_url.protocol}`);/d' \
+sed -i '' -e '/const wasm_url = new URL/,/^}/d' \
     -e '/const wasmInstance = (await WebAssembly.instantiate(wasmCode, imports)).instance;/r ../init_code.js' \
     -e '/const wasmInstance = (await WebAssembly.instantiate(wasmCode, imports)).instance;/d' ../dcap_qvl_node.js
 
 # Clean up temporary files
-rm ../wasm.b64 ../init_code.js
+# rm ../wasm.b64 ../init_code.js
