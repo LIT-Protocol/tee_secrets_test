@@ -78,7 +78,10 @@ async function main(): Promise<void> {
   //   },
   // ];
 
-  const litActionCode = fs.readFileSync("./litAction/dist/bundle.js", "utf8");
+  const litActionCode = fs.readFileSync(
+    "./litAction-wasm/dist/bundle.js",
+    "utf8"
+  );
   const derivedIpfsId = await stringToIpfsHash(litActionCode);
 
   const accessControlConditions = [

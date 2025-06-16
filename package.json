@@ -26,6 +26,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@lit-protocol/dcap-qvl-ts": "^1.0.0",
     "@phala/dcap-qvl-node": "^0.2.7",
     "ethers": "^5.8.0",
     "ipfs-only-hash": "^4.0.0",

@@ -1,0 +1,23 @@
+{
+  "name": "litaction",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@lit-protocol/dcap-qvl-ts": "^1.0.3",
+    "@phala/dcap-qvl-node": "^0.2.7",
+    "@phala/dcap-qvl-web": "^0.2.7"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.1",
+    "ts-node": "^10.9.2"
+  },
+  "type": "module"
+}

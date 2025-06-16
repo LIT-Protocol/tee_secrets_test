@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "inline-wasm": "ts-node scripts/inline_wasm.ts",
-    "build": "npm run inline-wasm && esbuild index.ts --bundle --platform=neutral --loader:.wasm=base64 --outfile=dist/bundle.js"
+    "build": "node build.js"
   },
   "keywords": [],
   "author": "",
