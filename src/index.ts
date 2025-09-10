@@ -106,7 +106,7 @@ async function main(): Promise<void> {
     console.log("Encrypted secret:", encryptResponse);
 
     const ethersSigner = new ethers.Wallet(
-      process.env.ETHEREUM_WALLET_PRIVATE_KEY!,
+      process.env.LIT_MUMBAI_DEPLOYER_PRIVATE_KEY!,
       new ethers.providers.JsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE)
     );
 
