@@ -1,27 +1,16 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import {
-  LitNodeClient,
-  uint8arrayToString,
-  uint8arrayFromString,
-} from "@lit-protocol/lit-node-client";
-import { AccessControlConditions, AuthSig, Chain } from "@lit-protocol/types";
+import { LitNodeClient } from "@lit-protocol/lit-node-client";
 import { ethers } from "ethers";
-import {
-  LIT_ABILITY,
-  LIT_CHAINS,
-  LIT_EVM_CHAINS,
-  LIT_RPC,
-} from "@lit-protocol/constants";
+import { LIT_ABILITY, LIT_RPC } from "@lit-protocol/constants";
 import {
   LitAccessControlConditionResource,
   LitActionResource,
-  createSiweMessage,
   generateAuthSig,
 } from "@lit-protocol/auth-helpers";
 import { createSiweWithResourceParams, stringToIpfsHash } from "./utils";
-// import { litActionCode } from "./litAction";
+
 import fs from "fs";
 
 async function main(): Promise<void> {
@@ -35,45 +24,6 @@ async function main(): Promise<void> {
   const secret = new TextEncoder().encode("This is my secret message");
   const phalaTeeUrl =
     "https://336bfec5ed93970c67da872930846163f27c5041-3002.dstack-prod5.phala.network";
-
-  // // Gate the access to the secret on a valid phala attestation
-  // const evmContractConditions = [
-  //   {
-  //     contractAddress: "0x76A3657F2d6c5C66733e9b69ACaDadCd0B68788b",
-  //     functionName: "verifyAndAttestOnChain",
-  //     functionParams: [":litParam:attestationQuote"],
-  //     functionAbi: {
-  //       inputs: [
-  //         {
-  //           internalType: "bytes",
-  //           name: "rawQuote",
-  //           type: "bytes",
-  //         },
-  //       ],
-  //       name: "verifyAndAttestOnChain",
-  //       outputs: [
-  //         {
-  //           internalType: "bool",
-  //           name: "success",
-  //           type: "bool",
-  //         },
-  //         {
-  //           internalType: "bytes",
-  //           name: "output",
-  //           type: "bytes",
-  //         },
-  //       ],
-  //       stateMutability: "view",
-  //       type: "function",
-  //     },
-  //     chain: "sepolia" as const,
-  //     returnValueTest: {
-  //       key: "success",
-  //       comparator: "=" as const,
-  //       value: "true",
-  //     },
-  //   },
-  // ];
 
   const litActionCode = fs.readFileSync(
     "./litAction-wasm/dist/bundle.js",
@@ -135,9 +85,6 @@ async function main(): Promise<void> {
           walletAddress: ethersSigner.address,
           nonce: await client.getLatestBlockhash(),
           litNodeClient: client,
-          // siweResources: [
-          //   `litParam:attestationQuote:${encodedAttestationQuote}`,
-          // ],
         });
 
         return await generateAuthSig({

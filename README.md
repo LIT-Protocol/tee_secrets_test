@@ -42,6 +42,14 @@ cd tee_secrets_test
 npm install
 ```
 
+3. Configure environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` and add your Ethereum wallet private key to `ETHEREUM_WALLET_PRIVATE_KEY`. This wallet will be used to interact with the Lit Protocol network.
+
 ## Building
 
 Build the WASM module and prepare the Lit Action:
