@@ -10,9 +10,7 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "@phala/dcap-qvl-node": "^0.2.7"
-  },
+  "dependencies": {},
   "devDependencies": {
     "esbuild": "^0.20.1",
     "ts-node": "^10.9.2"
