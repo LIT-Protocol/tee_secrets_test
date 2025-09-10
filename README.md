@@ -1,4 +1,4 @@
-# TEE Secrets with Lit Protocol
+# Retrieving and decrypting secrets from a Phala TEE with Lit Protocol
 
 A demonstration of using Lit Protocol as a secure secret store for Phala TEE (Trusted Execution Environment) applications. This repository shows how to conditionally decrypt content using Lit Protocol, where decryption is only allowed for verified Phala TEE instances running known-good software builds.
 
